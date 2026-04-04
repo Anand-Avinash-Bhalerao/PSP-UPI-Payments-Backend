@@ -1,9 +1,7 @@
 package com.billion_dollor_company.Bank_Server.payloads;
 
-import com.billion_dollor_company.Bank_Server.models.projections.AccountBasicProjection;
-import jakarta.validation.constraints.NotBlank;
+import com.billion_dollor_company.Bank_Server.common.repository.models.projections.AccountBasicProjection;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
