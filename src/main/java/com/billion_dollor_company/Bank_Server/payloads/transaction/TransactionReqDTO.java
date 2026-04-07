@@ -1,12 +1,10 @@
 package com.billion_dollor_company.Bank_Server.payloads.transaction;
 
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@JacksonXmlRootElement(localName = "TransactionRequest")
 public class TransactionReqDTO {
 
     @NotNull(message = "The payer upiID field cannot be empty")
