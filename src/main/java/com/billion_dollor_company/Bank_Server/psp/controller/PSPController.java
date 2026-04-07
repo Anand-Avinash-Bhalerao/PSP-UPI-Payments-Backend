@@ -4,6 +4,7 @@ package com.billion_dollor_company.Bank_Server.psp.controller;
 import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.AccountBasicRequestException;
 import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.RegistrationRequestException;
 import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.TransactionRequestException;
+import com.billion_dollor_company.Bank_Server.domain.model.EncryptedData;
 import com.billion_dollor_company.Bank_Server.payloads.AccountBasicDTO;
 import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceReqDTO;
 import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceResDTO;
@@ -11,7 +12,10 @@ import com.billion_dollor_company.Bank_Server.payloads.fetchKeys.FetchKeysResDTO
 import com.billion_dollor_company.Bank_Server.payloads.registration.RegistrationReqDTO;
 import com.billion_dollor_company.Bank_Server.payloads.registration.RegistrationResDTO;
 import com.billion_dollor_company.Bank_Server.payloads.transaction.TransactionReqDTO;
-import com.billion_dollor_company.Bank_Server.payloads.transaction.TransactionResDTO;
+import com.billion_dollor_company.Bank_Server.psp.mappers.PSPMapper;
+import com.billion_dollor_company.Bank_Server.psp.payloads.EncryptedReqDTO;
+import com.billion_dollor_company.Bank_Server.psp.payloads.checkbalance.CheckBalanceResDTO;
+import com.billion_dollor_company.Bank_Server.psp.payloads.transaction.TransactionResDTO;
 import com.billion_dollor_company.Bank_Server.psp.service.PSPService;
 import com.billion_dollor_company.Bank_Server.common.util.Constants;
 import jakarta.validation.Valid;
@@ -35,9 +39,12 @@ public class PSPController {
 
     private final PSPService pspService;
 
+    private final PSPMapper pspMapper;
+
     @Autowired
-    public PSPController(PSPService pspService) {
+    public PSPController(PSPService pspService, PSPMapper pspMapper) {
         this.pspService = pspService;
+        this.pspMapper = pspMapper;
     }
 
     /**
@@ -72,54 +79,54 @@ public class PSPController {
      * @return ResponseEntity with BalanceResDTO.
      * @throws AccountBasicRequestException if validation fails.
      */
-    @PostMapping("/checkBalance")
-    public ResponseEntity<BalanceResDTO> getAccountBalance(@Valid @RequestBody BalanceReqDTO request, BindingResult errors) {
+//    @PostMapping("/checkBalance")
+//    public ResponseEntity<BalanceResDTO> getAccountBalance(@Valid @RequestBody BalanceReqDTO request, BindingResult errors) {
+//
+//        final String FUNCTION_NAME = "getAccountBalance()";
+//
+//        if (errors.hasErrors())
+//            throw new AccountBasicRequestException(errors);
+//
+//        logIncomingRequest(request, FUNCTION_NAME);
+//
+//        BalanceResDTO responseInfo = pspService.getAccountBalance(request);
+//
+//        logOutgoingResponse(responseInfo, FUNCTION_NAME);
+//
+//        if (responseInfo.getStatus().equals(Constants.Status.FAILED)) {
+//            return ResponseEntity.badRequest().body(responseInfo);
+//        }
+//        return ResponseEntity.ok().body(responseInfo);
+//    }
 
-        final String FUNCTION_NAME = "getAccountBalance()";
-
-        if (errors.hasErrors())
-            throw new AccountBasicRequestException(errors);
-
-        logIncomingRequest(request, FUNCTION_NAME);
-
-        BalanceResDTO responseInfo = pspService.getAccountBalance(request);
-
-        logOutgoingResponse(responseInfo, FUNCTION_NAME);
-
-        if (responseInfo.getStatus().equals(Constants.Status.FAILED)) {
-            return ResponseEntity.badRequest().body(responseInfo);
-        }
-        return ResponseEntity.ok().body(responseInfo);
-    }
-
-    /**
-     * Initiates a transaction between accounts.
-     *
-     * @param request The transaction request DTO.
-     * @param errors BindingResult for validation errors.
-     * @return ResponseEntity with TransactionResDTO.
-     * @throws TransactionRequestException if validation fails.
-     */
-    @PostMapping("/transaction")
-    public ResponseEntity<TransactionResDTO> initiateTransaction(@Valid @RequestBody TransactionReqDTO request, BindingResult errors) {
-
-        final String FUNCTION_NAME = "initiateTransaction()";
-
-        if (errors.hasErrors())
-            throw new TransactionRequestException(errors);
-
-        logIncomingRequest(request, FUNCTION_NAME);
-
-        TransactionResDTO responseInfo = pspService.initiateTransaction(request);
-
-        logOutgoingResponse(responseInfo, FUNCTION_NAME);
-
-        if (responseInfo.getStatus().equals(Constants.Status.FAILED)) {
-            return ResponseEntity.badRequest().body(responseInfo);
-        }
-
-        return ResponseEntity.ok().body(responseInfo);
-    }
+//    /**
+//     * Initiates a transaction between accounts.
+//     *
+//     * @param request The transaction request DTO.
+//     * @param errors BindingResult for validation errors.
+//     * @return ResponseEntity with TransactionResDTO.
+//     * @throws TransactionRequestException if validation fails.
+//     */
+//    @PostMapping("/transaction")
+//    public ResponseEntity<TransactionResDTO> initiateTransaction(@Valid @RequestBody TransactionReqDTO request, BindingResult errors) {
+//
+//        final String FUNCTION_NAME = "initiateTransaction()";
+//
+//        if (errors.hasErrors())
+//            throw new TransactionRequestException(errors);
+//
+//        logIncomingRequest(request, FUNCTION_NAME);
+//
+//        TransactionResDTO responseInfo = pspService.initiateTransaction(request);
+//
+//        logOutgoingResponse(responseInfo, FUNCTION_NAME);
+//
+//        if (responseInfo.getStatus().equals(Constants.Status.FAILED)) {
+//            return ResponseEntity.badRequest().body(responseInfo);
+//        }
+//
+//        return ResponseEntity.ok().body(responseInfo);
+//    }
 
     /**
      * Registers a new user account.
@@ -170,6 +177,21 @@ public class PSPController {
         return ResponseEntity.ok().body(response);
     }
 
+
+    @PostMapping("/v2/checkBalance")
+    public CheckBalanceResDTO getAccountBalanceV2(@Valid @RequestBody EncryptedReqDTO checkBalanceDTO) {
+
+        EncryptedData encryptedData = pspMapper.mapEncryptedReqDtoToEncryptedData(checkBalanceDTO);
+        return pspService.initiateCheckBalanceInquiry(encryptedData);
+
+    }
+
+    @PostMapping("/v2/initiateTransaction")
+    public TransactionResDTO initiateTransaction(@Valid @RequestBody EncryptedReqDTO transactionDTO) {
+
+        EncryptedData encryptedData = pspMapper.mapEncryptedReqDtoToEncryptedData(transactionDTO);
+        return pspService.initiateTransaction(encryptedData);
+    }
 
     /**
      * Logs the incoming request.

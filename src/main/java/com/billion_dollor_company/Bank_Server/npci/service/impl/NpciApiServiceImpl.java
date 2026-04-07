@@ -1,14 +1,18 @@
 package com.billion_dollor_company.Bank_Server.npci.service.impl;
 
+import com.billion_dollor_company.Bank_Server.domain.model.EncryptedData;
 import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceReqDTO;
 import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceResDTO;
 import com.billion_dollor_company.Bank_Server.payloads.fetchKeys.FetchKeysResDTO;
 import com.billion_dollor_company.Bank_Server.payloads.registration.RegistrationReqDTO;
 import com.billion_dollor_company.Bank_Server.payloads.registration.RegistrationResDTO;
 import com.billion_dollor_company.Bank_Server.payloads.transaction.TransactionReqDTO;
-import com.billion_dollor_company.Bank_Server.payloads.transaction.TransactionResDTO;
 import com.billion_dollor_company.Bank_Server.npci.service.NpciApiService;
 import com.billion_dollor_company.Bank_Server.common.util.Constants;
+import com.billion_dollor_company.Bank_Server.psp.payloads.checkbalance.CheckBalanceResDTO;
+import com.billion_dollor_company.Bank_Server.psp.payloads.checkbalance.CheckBalanceResponseBody;
+import com.billion_dollor_company.Bank_Server.psp.payloads.transaction.TransactionResDTO;
+import com.billion_dollor_company.Bank_Server.psp.payloads.transaction.TransactionResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,17 +29,17 @@ public class NpciApiServiceImpl implements NpciApiService {
     }
 
 
-    @Override
-    public BalanceResDTO getAccountBalance(BalanceReqDTO requestInfo) {
-        String checkBalanceURL = Constants.Servers.NPCI_Server.getAccountBalanceURL();
-        // The exception handling is to handle response's other than status code of 200. if we receive BAD_REQUEST from NPCI, then we need to handle it.
-        try {
-            return restTemplate.postForEntity(checkBalanceURL, requestInfo, BalanceResDTO.class).getBody();
-        } catch (HttpClientErrorException exception) {
-            // The body contains an object of CheckBalanceDTO in XML form.
-            return exception.getResponseBodyAs(BalanceResDTO.class);
-        }
-    }
+//    @Override
+//    public BalanceResDTO getAccountBalance(BalanceReqDTO requestInfo) {
+//        String checkBalanceURL = Constants.Servers.NPCI_Server.getAccountBalanceURL();
+//        // The exception handling is to handle response's other than status code of 200. if we receive BAD_REQUEST from NPCI, then we need to handle it.
+//        try {
+//            return restTemplate.postForEntity(checkBalanceURL, requestInfo, BalanceResDTO.class).getBody();
+//        } catch (HttpClientErrorException exception) {
+//            // The body contains an object of CheckBalanceDTO in XML form.
+//            return exception.getResponseBodyAs(BalanceResDTO.class);
+//        }
+//    }
 
     @Override
     public RegistrationResDTO register(RegistrationReqDTO requestInfo) {
@@ -61,21 +65,52 @@ public class NpciApiServiceImpl implements NpciApiService {
         }
     }
 
-    // To make an API call to NPCI.
     @Override
-    public TransactionResDTO initiateTransaction(TransactionReqDTO requestInfo) {
-        String transactionURL = Constants.Servers.NPCI_Server.getTransactionURL();
-
-        // The exception handling is to handle response's other than status code 200. if we receive BAD_REQUEST from NPCI, then we need to handle it.
+    public CheckBalanceResDTO initiateCheckBalanceInquiry(EncryptedData encryptedData) {
+        // dummy response.
+        CheckBalanceResDTO response = new CheckBalanceResDTO();
+        response.setStatus(Constants.Status.SUCCESS);
+        CheckBalanceResponseBody body = new CheckBalanceResponseBody();
+        body.setBalance(1000);
+        body.setUpiID("ABCDB");
+        response.setBody(body);
+        String checkBalanceURL = Constants.Servers.NPCI_Server.getAccountBalanceURL();
         try {
-            return restTemplate.postForEntity(transactionURL, requestInfo, TransactionResDTO.class).getBody();
+            return restTemplate.postForEntity(checkBalanceURL, encryptedData, CheckBalanceResDTO.class).getBody();
         } catch (HttpClientErrorException exception) {
-            // The body contains an object of TransactionResponseDTO in XML form.
-            return exception.getResponseBodyAs(TransactionResDTO.class);
+            exception.printStackTrace();
         }
+
+
+        return response;
     }
 
-    // 200 - 300 ok -> body -> 10 fields -> status, mesages,asd,as,d,as,das,d,,
-    // post -> body -> 200, 400 -> body
-    // 400 - bad request -> body -> 2 fields -> status, message
+    @Override
+    public TransactionResDTO initiateTransaction(EncryptedData encryptedData) {
+        // dummy response.
+        TransactionResDTO response = new TransactionResDTO();
+        TransactionResponseBody body = new TransactionResponseBody();
+        body.setTransactionId("123456789");
+        body.setAmount(500.0);
+        body.setPayerUpiID("payer@upi");
+        body.setPayeeUpiID("payee@upi");
+        response.setBody(body);
+        response.setStatus(Constants.Status.SUCCESS);
+
+        return response;
+    }
+
+    // To make an API call to NPCI.
+//    @Override
+//    public TransactionResDTO initiateTransaction2(TransactionReqDTO requestInfo) {
+//        String transactionURL = Constants.Servers.NPCI_Server.getTransactionURL();
+//
+//        // The exception handling is to handle response's other than status code 200. if we receive BAD_REQUEST from NPCI, then we need to handle it.
+//        try {
+//            return restTemplate.postForEntity(transactionURL, requestInfo, TransactionResDTO.class).getBody();
+//        } catch (HttpClientErrorException exception) {
+//            // The body contains an object of TransactionResponseDTO in XML form.
+//            return exception.getResponseBodyAs(TransactionResDTO.class);
+//        }
+//    }
 }
