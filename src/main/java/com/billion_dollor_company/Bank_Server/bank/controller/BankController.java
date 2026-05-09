@@ -1,11 +1,10 @@
 package com.billion_dollor_company.Bank_Server.bank.controller;
 
 
-import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceReqDTO;
-import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceResDTO;
-import com.billion_dollor_company.Bank_Server.payloads.transaction.TransactionReqDTO;
-import com.billion_dollor_company.Bank_Server.payloads.transaction.TransactionResDTO;
+import com.billion_dollor_company.Bank_Server.bank.payloads.checkbalance.request.CheckBalanceReqBody;
+import com.billion_dollor_company.Bank_Server.bank.payloads.checkbalance.response.CheckBalanceResDTO;
 import com.billion_dollor_company.Bank_Server.bank.service.BankService;
+import com.billion_dollor_company.Bank_Server.common.payload.request.BaseReqDTO;
 import com.billion_dollor_company.Bank_Server.common.util.Constants;
 import com.billion_dollor_company.Bank_Server.common.util.MessagePrinter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/bank", produces = {"application/xml"})
+@RequestMapping(path = "/bank", produces = {"application/json"})
 public class BankController {
 
     private final BankService bankService;
@@ -24,28 +23,8 @@ public class BankController {
     }
 
     @PostMapping("/checkBalance")
-    public ResponseEntity<BalanceResDTO> getAccountBalance(@RequestBody BalanceReqDTO request) {
-
-        // print the request on console.
-        MessagePrinter.printMessage(Constants.MessagePrinter.Server.BANK, Constants.MessagePrinter.MethodType.CheckBalance, request);
-
-        // from the service only successful account balance response reaches till here. so no need for exception handling
-        return ResponseEntity.ok(bankService.getAccountBalance(request));
-    }
-
-    @PostMapping("/transaction")
-    public ResponseEntity<TransactionResDTO> initiateTransaction(@RequestBody TransactionReqDTO request) {
-
-        // print the request on console.
-        MessagePrinter.printMessage(Constants.MessagePrinter.Server.BANK, Constants.MessagePrinter.MethodType.InitiateTransaction, request);
-
-        // from the service only successful transaction response reaches till here. so no need for exception handling
-        return ResponseEntity.ok(bankService.initiateTransaction(request));
+    public ResponseEntity<CheckBalanceResDTO> getAccountBalance(@RequestBody BaseReqDTO<CheckBalanceReqBody> request) {
+        bankService.getAccountBalance(request.getBody());
+        return ResponseEntity.ok(null);
     }
 }
-
-
-
-
-
-

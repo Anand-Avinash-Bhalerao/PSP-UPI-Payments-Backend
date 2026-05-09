@@ -33,46 +33,8 @@ public class PSPServiceImpl implements PSPService {
     }
 
     @Override
-    public AccountBasicDTO getAccountInfo(AccountBasicDTO infoRequest) {
-        String upiID = infoRequest.getUpiID();
-        AccountBasicProjection projection = accountInfoRepository.getBasicInfoByUpiID(upiID);
-        if (projection == null) {
-            throw new DataNotFoundException("The information for the account corresponding to upiID: " + infoRequest.getUpiID() + " was not found.");
-        }
-        return new AccountBasicDTO(projection);
-    }
-
-//    @Override
-//    public BalanceResDTO getAccountBalance(BalanceReqDTO infoRequest) {
-//        return npciApiService.getAccountBalance(infoRequest);
-//    }
-
-    @Override
-    public RegistrationResDTO register(RegistrationReqDTO infoRequest) {
-        return npciApiService.register(infoRequest);
-    }
-
-    @Override
-    public FetchKeysResDTO fetchKeys() {
-        return npciApiService.fetchKeys();
-    }
-
-    @Override
     public CheckBalanceResDTO initiateCheckBalanceInquiry(EncryptedData encryptedData) {
         return npciApiService.initiateCheckBalanceInquiry(encryptedData);
     }
-
-    @Override
-    public TransactionResDTO initiateTransaction(EncryptedData encryptedData) {
-        return npciApiService.initiateTransaction(encryptedData);
-    }
-
-//    @Override
-//    public TransactionResDTO initiateTransaction(TransactionReqDTO requestInfo) {
-//        if(requestInfo.getPayeeUpiID().equals(requestInfo.getPayerUpiID())){
-//            throw new DataNotFoundException("Payer is same as Payee");
-//        }
-//        return npciApiService.initiateTransaction2(requestInfo);
-//    }
 
 }

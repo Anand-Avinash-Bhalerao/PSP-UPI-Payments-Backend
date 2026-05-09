@@ -12,12 +12,5 @@ import com.billion_dollor_company.Bank_Server.psp.payloads.transaction.Transacti
 import com.billion_dollor_company.Bank_Server.psp.payloads.checkbalance.CheckBalanceResDTO;
 
 public interface PSPService {
-//    TransactionResDTO initiateTransaction(TransactionReqDTO requestInfo);
-    AccountBasicDTO getAccountInfo(AccountBasicDTO infoRequest);
-//    BalanceResDTO getAccountBalance(BalanceReqDTO infoRequest);
-    RegistrationResDTO register(RegistrationReqDTO infoRequest);
-    FetchKeysResDTO fetchKeys();
-
     CheckBalanceResDTO initiateCheckBalanceInquiry(EncryptedData encryptedData);
-    TransactionResDTO initiateTransaction(EncryptedData encryptedData);
 }
