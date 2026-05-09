@@ -1,6 +1,7 @@
 package com.billion_dollor_company.Bank_Server.bank.service.impl;
 
 
+import com.billion_dollor_company.Bank_Server.bank.payloads.checkbalance.request.CheckBalanceReqBody;
 import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.CheckBalanceFailedException;
 import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.TransactionFailedException;
 import com.billion_dollor_company.Bank_Server.common.repository.models.AccountInfo;
@@ -62,7 +63,6 @@ public class BankServiceImpl implements BankService {
     }
 
 
-    @Override
     public BalanceResDTO getAccountBalance(BalanceReqDTO requestInfo) {
         String upiID = requestInfo.getUpiID();
         String encryptedPassword = requestInfo.getEncryptedPassword();
@@ -95,8 +95,6 @@ public class BankServiceImpl implements BankService {
     }
 
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    @Override
     public TransactionResDTO initiateTransaction(TransactionReqDTO requestInfo) {
         // Extract the upiID of payer and payee.
         // payer is the one paying and payee is the one receiving the money.
@@ -160,6 +158,11 @@ public class BankServiceImpl implements BankService {
         }
 
         return responseInfo;
+    }
+
+    @Override
+    public BalanceResDTO getAccountBalance(CheckBalanceReqBody requestInfo) {
+        return null;
     }
 
 }
