@@ -8,6 +8,7 @@ import com.billion_dollor_company.Bank_Server.psp.integration.npci.dto.checkBala
 import com.billion_dollor_company.Bank_Server.psp.integration.npci.dto.checkBalance.NPCICheckBalanceResBodyDTO;
 import com.billion_dollor_company.Bank_Server.psp.integration.npci.mapper.NPCIMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,10 +21,17 @@ public class NPCIHttpClient implements NPCIClient {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Value("${npci.base-url}")
+    private String baseUrl;
+
+    @Value("${npci.endpoints.checkBalance}")
+    private String checkBalanceEndpoint;
+
+
     @Override
     public CheckBalanceResult initiateCheckBalance(CheckBalanceCommand command) {
 
-        String url = "https://api.npci.org.in/checkBalance";
+        final String url = baseUrl + checkBalanceEndpoint;
 
         // Map CheckBalanceCommand to NPCI request format
         BaseRequestDTO<NPCICheckBalanceReqBodyDTO> request = npciMapper.toNPCICheckBalanceReq(command);
