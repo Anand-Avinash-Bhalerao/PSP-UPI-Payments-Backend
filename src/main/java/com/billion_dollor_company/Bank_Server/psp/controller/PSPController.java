@@ -1,58 +1,56 @@
 package com.billion_dollor_company.Bank_Server.psp.controller;
 
-
-import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.AccountBasicRequestException;
-import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.RegistrationRequestException;
-import com.billion_dollor_company.Bank_Server.common.exceptions.customExceptions.TransactionRequestException;
-import com.billion_dollor_company.Bank_Server.domain.model.EncryptedData;
-import com.billion_dollor_company.Bank_Server.payloads.AccountBasicDTO;
-import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceReqDTO;
-import com.billion_dollor_company.Bank_Server.payloads.checkBalance.BalanceResDTO;
-import com.billion_dollor_company.Bank_Server.payloads.fetchKeys.FetchKeysResDTO;
-import com.billion_dollor_company.Bank_Server.payloads.registration.RegistrationReqDTO;
-import com.billion_dollor_company.Bank_Server.payloads.registration.RegistrationResDTO;
-import com.billion_dollor_company.Bank_Server.payloads.transaction.TransactionReqDTO;
+import com.billion_dollor_company.Bank_Server.common.payloads.request.BaseRequestDTO;
+import com.billion_dollor_company.Bank_Server.common.payloads.response.BaseResponseDTO;
+import com.billion_dollor_company.Bank_Server.psp.controller.payloads.CheckBalanceReqBodyDTO;
+import com.billion_dollor_company.Bank_Server.psp.controller.payloads.CheckBalanceResBodyDTO;
+import com.billion_dollor_company.Bank_Server.psp.domain.CheckBalanceCommand;
+import com.billion_dollor_company.Bank_Server.psp.domain.CheckBalanceResult;
 import com.billion_dollor_company.Bank_Server.psp.mappers.PSPMapper;
-import com.billion_dollor_company.Bank_Server.psp.payloads.EncryptedReqDTO;
-import com.billion_dollor_company.Bank_Server.psp.payloads.checkbalance.CheckBalanceResDTO;
-import com.billion_dollor_company.Bank_Server.psp.payloads.transaction.TransactionResDTO;
-import com.billion_dollor_company.Bank_Server.psp.service.PSPService;
-import com.billion_dollor_company.Bank_Server.common.util.Constants;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.billion_dollor_company.Bank_Server.psp.service.PSPService;
 
 /**
- * REST Controller for PSP operations.
+ * REST controller for Payment Service Provider operations.
+ * Handles incoming PSP-related requests and routes them to appropriate services.
  */
 @RestController
-@RequestMapping(
-        value = "/psp",
-        produces = {"application/json"}
-)
-@Slf4j
+@RequestMapping("/psp")
 public class PSPController {
 
-    private final PSPService pspService;
-
-    private final PSPMapper pspMapper;
+    private static final Logger logger = LoggerFactory.getLogger(PSPController.class);
 
     @Autowired
-    public PSPController(PSPService pspService, PSPMapper pspMapper) {
-        this.pspService = pspService;
-        this.pspMapper = pspMapper;
-    }
+    private PSPService pspService;
 
+    @Autowired
+    private PSPMapper pspMapper;
+
+    /**
+     * Retrieves the current balance for a given account.
+     *
+     * @param request Contains account details needed to check balance
+     * @return CheckBalanceResDTO with the account balance information
+     */
     @PostMapping("/checkBalance")
-    public CheckBalanceResDTO getAccountBalance(@Valid @RequestBody EncryptedReqDTO checkBalanceDTO) {
+    public ResponseEntity<BaseResponseDTO<CheckBalanceResBodyDTO>> checkBalance(@RequestBody BaseRequestDTO<CheckBalanceReqBodyDTO> request) {
+        final String functionName = "checkBalance(@RequestBody BaseRequestDTO<CheckBalanceReqBodyDTO> request)";
+        logger.info("Initiated: {}", functionName);
 
-        EncryptedData encryptedData = pspMapper.mapEncryptedReqDtoToEncryptedData(checkBalanceDTO);
-        return pspService.initiateCheckBalanceInquiry(encryptedData);
-
+        try {
+            CheckBalanceCommand command = pspMapper.toCheckBalanceCommand(request);
+            CheckBalanceResult result = pspService.initiateBalanceInquiry(command);
+            BaseResponseDTO<CheckBalanceResBodyDTO> baseResponse = pspMapper.toCheckBalanceResponse(result);
+            return ResponseEntity.ok(baseResponse);
+        } catch (Exception e) {
+            logger.error("Failed: {} - {}", functionName, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
 }
