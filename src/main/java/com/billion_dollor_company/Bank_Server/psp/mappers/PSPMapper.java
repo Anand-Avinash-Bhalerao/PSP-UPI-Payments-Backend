@@ -6,10 +6,9 @@ import com.billion_dollor_company.Bank_Server.common.payloads.request.BaseReques
 import com.billion_dollor_company.Bank_Server.common.payloads.request.RequestHeader;
 import com.billion_dollor_company.Bank_Server.common.payloads.request.Security;
 import com.billion_dollor_company.Bank_Server.common.payloads.response.BaseResponseDTO;
-import com.billion_dollor_company.Bank_Server.common.payloads.response.ErrorDetails;
 import com.billion_dollor_company.Bank_Server.common.payloads.response.ResponseHeader;
-import com.billion_dollor_company.Bank_Server.psp.controller.payloads.CheckBalanceReqBodyDTO;
-import com.billion_dollor_company.Bank_Server.psp.controller.payloads.CheckBalanceResBodyDTO;
+import com.billion_dollor_company.Bank_Server.psp.controller.dto.checkBalance.CheckBalanceReqBodyDTO;
+import com.billion_dollor_company.Bank_Server.psp.controller.dto.checkBalance.CheckBalanceResBodyDTO;
 import com.billion_dollor_company.Bank_Server.psp.domain.CheckBalanceCommand;
 import com.billion_dollor_company.Bank_Server.psp.domain.CheckBalanceResult;
 import org.mapstruct.Mapper;

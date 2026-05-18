@@ -1,8 +1,6 @@
-package com.billion_dollor_company.Bank_Server.psp.controller.payloads;
+package com.billion_dollor_company.Bank_Server.psp.controller.dto.checkBalance;
 
 import com.billion_dollor_company.Bank_Server.common.domain.Currency;
-
-import java.math.BigDecimal;
 
 public record CheckBalanceResBodyDTO(
         double availableBalance,

@@ -2,8 +2,8 @@ package com.billion_dollor_company.Bank_Server.psp.controller;
 
 import com.billion_dollor_company.Bank_Server.common.payloads.request.BaseRequestDTO;
 import com.billion_dollor_company.Bank_Server.common.payloads.response.BaseResponseDTO;
-import com.billion_dollor_company.Bank_Server.psp.controller.payloads.CheckBalanceReqBodyDTO;
-import com.billion_dollor_company.Bank_Server.psp.controller.payloads.CheckBalanceResBodyDTO;
+import com.billion_dollor_company.Bank_Server.psp.controller.dto.checkBalance.CheckBalanceReqBodyDTO;
+import com.billion_dollor_company.Bank_Server.psp.controller.dto.checkBalance.CheckBalanceResBodyDTO;
 import com.billion_dollor_company.Bank_Server.psp.domain.CheckBalanceCommand;
 import com.billion_dollor_company.Bank_Server.psp.domain.CheckBalanceResult;
 import com.billion_dollor_company.Bank_Server.psp.mappers.PSPMapper;

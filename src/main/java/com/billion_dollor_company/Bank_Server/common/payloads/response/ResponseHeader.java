@@ -2,7 +2,7 @@ package com.billion_dollor_company.Bank_Server.common.payloads.response;
 
 import com.billion_dollor_company.Bank_Server.common.domain.Channel;
 import com.billion_dollor_company.Bank_Server.common.domain.RequestType;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.billion_dollor_company.Bank_Server.common.domain.ResponseStatus;
 
 import java.time.Instant;
 import java.util.UUID;
